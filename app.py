@@ -26,9 +26,9 @@ if "step" not in st.session_state:
 # ─────────────────── 1단계 ───────────────────
 if st.session_state.step == 1:
     st.header("1️⃣ Human-Limit Trigger")
-    st.caption("인간적 방법·자원으로 문제를 해결하려는 시도가 충분했는지 점검합니다.")
+    st.caption("인간의 방법·자원으로 문제를 해결하려는 시도가 충분했는지 점검합니다.")
     tried = st.radio(
-        "인간적 방법을 충분히 시도했습니까?",
+        "인간의 능력 범위 안에서 가능한 방법을 충분히 시도했습니까?",
         ("아직 충분하지 않음", "예, 충분히 시도함"),
         key="tried",
     )
@@ -37,7 +37,7 @@ if st.session_state.step == 1:
     if col_next.button("다음"):
         st.session_state.gate1 = gate_human_limit(tried.startswith("예"))
         if st.session_state.gate1 != "Pass":
-            st.error("추가 연구·자원 투입 후 재평가가 필요합니다.")
+            st.error("현재는 기술 사용을 허용할 수 없습니다. 추가 연구·자원 투입 후 재평가가 필요합니다.")
             st.stop()
         st.session_state.step = 2
         st.rerun()
@@ -48,7 +48,7 @@ if st.session_state.step == 2:
     st.caption("발생 가능한 위험에 대해 점검합니다.")
 
     controllable = st.radio(
-        "위험이 통제 가능하거나 가역적입니까?",
+        "발생 가능성 있는 위험이 통제 가능하거나 가역적입니까?",
         ("아니오, 치명적·비가역적", "예, 통제/가역 가능"),
         key="controllable",
     )
@@ -61,7 +61,7 @@ if st.session_state.step == 2:
     if col_next.button("다음"):
         st.session_state.gate2 = gate_irreversible(controllable.startswith("예"))
         if st.session_state.gate2 != "Pass":
-            st.error("치명적·비가역 위험이 있는 기술은 즉시 기각됩니다.")
+            st.error("현재는 기술 사용을 허용할 수 없습니다. 치명적·비가역 위험이 있는 기술은 즉시 기각됩니다.")
             st.stop()
         st.session_state.step = 3
         st.rerun()
@@ -72,6 +72,7 @@ if st.session_state.step == 3:
     st.caption(
         "각 평가 항목을 0 ~ 100 점으로 매겨 주세요. "
         "각 평가항목을 더 자세히 보려면 ▶ 아이콘을 눌러 펼쳐보기가 가능합니다."
+        "각 항목은 가중치에 의해 종합 점수로 자동계산됩니다."
     )
 
     # ⇣ 항목별 설명 (툴팁 & Expander 내용) ⇣
@@ -120,7 +121,7 @@ if st.session_state.step == 3:
         # 슬라이더 + 툴팁
         score = st.slider(
             crit,
-            0, 100, 50, 5,
+            0, 100, 50, 1,
             key=f"score_{idx}",
             help=EXPLAIN[crit].strip().split("\n")[0]  # 첫 줄을 툴팁으로
         )
